@@ -3,7 +3,7 @@
 Elevator Pitch
 	Have you ever just wanted to guess at random numbers and improve your guessing skills? Do you want to compete with friends? Well then this is the app for you! Guess daily numbers and achieve the high score for lowest guesses! Enter practice mode and hone your number guessing skills!
 Design
-	![[Pasted image 20250114141616.png]]
+	![[design.png]]
 Key features
 	Score board, changed everyday
 	 a counter for number of attempts at guessing the number
