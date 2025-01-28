@@ -66,15 +66,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [X] **HTML pages** - added 3 html pages. login, main page, practice
+- [X] **Proper HTML element usage** - elements are used correctly and are divided into groups using place holders and div tags
+- [X] **Links** - links have been added that take you through the diffrent pages
+- [X] **Text** - Text boxes and titles for explinations have been added
+- [X] **3rd party API placeholder** - I gave an outline of what this should look like and gave a not in the html to link it to the actual api later
+- [ ] **Images** - honestly didnt need any images...
+- [X] **Login placeholder** - place holder has been added. note: use the link not the login button
+- [X] **DB data placeholder** - it has been noted where this will be added and a place holder for what it should look like has been added
+- [X] **WebSocket placeholder** - it has been noted where this will be added and a place holder for what it should look like has been added
 
 ## 🚀 CSS deliverable
 
