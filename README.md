@@ -80,12 +80,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Header, footer, and main content body** - I did not complete this part of the deliverable.
-- [ ] **Navigation elements** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
-- [ ] **Application elements** - I did not complete this part of the deliverable.
-- [ ] **Application text content** - I did not complete this part of the deliverable.
-- [ ] **Application images** - I did not complete this part of the deliverable.
+- [X] **Header, footer, and main content body** - the website is divided
+- [X] **Navigation elements** - you can naviate through all pages through buttons. all except the login fuction with still uses a link the reason for this is that it will be replaced with a login functionality later on, for now the link works best and will be removed when login is active
+- [X] **Responsive to window resizing** - website resizes in accourdance with window size. the scores on the home page move to bottom if the windo is too small
+- [X] **Application elements** - these have been added
+- [X] **Application text content** - text has been update with fonts and color acourdingly
+- [X] **Application images** - i have an image on there. it serves no purpose except to complete this point. will REMOVE later
 
 ## 🚀 React part 1: Routing deliverable
 

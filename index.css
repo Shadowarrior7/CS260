@@ -1,6 +1,35 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
     padding: 0;
+    height: 50px;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 60px;
+}
+
+.responsive-image {
+    width: 80%;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 7%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
