@@ -40,14 +40,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        <footer className="bg-dark text-white-50">
-          <div className="container-fluid">
-            <span className="text-reset">Author: Brennan Duncan, </span>
-            <a className="text-reset" href="https://github.com/Shadowarrior7/CS260">
-              Source
-            </a>
-          </div>
-        </footer>
+    
       </div>
     </BrowserRouter>
   );

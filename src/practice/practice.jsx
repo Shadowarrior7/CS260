@@ -5,7 +5,7 @@ import './practice.css';
 export function Practice() {
 return (
     <main>
-        <center>
+        <div className="container">
             <h1>Practice</h1>
             <form>
                 <label htmlFor="guess">Guess:  </label>
@@ -15,8 +15,7 @@ return (
             <br />
             <button className="btn btn-secondary">New Number</button>
             <br />
-
-        </center>
+        </div>
     </main>
 );
 }

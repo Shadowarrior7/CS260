@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import './home.css';
 
 export function Home() {
@@ -17,12 +18,9 @@ export function Home() {
             <span id="light-high">High</span>
             <span id="light-low">Low</span>
           </div>
-          <button type="button" className="btn btn-danger" style={{ backgroundColor: '#c94343' }}>
-            <a href="index.html" className="btn btn-secondary mb-2 rounded-pill">Logout</a>
-          </button>
-          <button type="button" className="btn btn-primary">
-            <a href="practice.html" className="btn btn-secondary mb-2 rounded-pill">Practice</a>
-          </button>
+          <div className="logout">
+          <NavLink to="/login" className="btn btn-danger">Logout</NavLink>
+          </div>
         </div>
         <div className="sidebar">
           <h2>Top Scores</h2>

@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap');
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 h1 {
     font-family: 'Gochi Hand', 'Dancing Script', cursive;
     font-size: 70px;
@@ -9,11 +17,24 @@ h1 {
 
 body {
     background-color: rgba(50, 102, 153, 100);
-
     color: white;
 }
-.body {
+
+.app {
     display: flex;
     flex-direction: column;
-    min-width: 375px;
-  }
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 0;
+    height: 50px;
+    
+}
