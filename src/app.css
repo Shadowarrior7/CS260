@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap');
+
+h1 {
+    font-family: 'Gochi Hand', 'Dancing Script', cursive;
+    font-size: 70px;
+    color: white;
+}
+
+body {
+    background-color: rgba(50, 102, 153, 100);
+
+    color: white;
+}
+.body {
+    display: flex;
+    flex-direction: column;
+    min-width: 375px;
+  }
