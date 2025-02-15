@@ -19,9 +19,9 @@ export function Login() {
         </center>
       </div>
 
-      <div className="text-center mt-4">
+      {/* <div className="text-center mt-4">
         <img src="design.png" alt="Design Image" className="responsive-image" />
-      </div>
+      </div> */}
 
 
       <footer className="bg-dark text-white-50">
