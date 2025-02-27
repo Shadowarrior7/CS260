@@ -1,37 +1,25 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import './login.css';
+import { PreLogin as Unauthenticated } from './pre_login';
+import { LoggedIn as Authenticated } from './logged_in';
+import { AuthState } from './authState';
 
-export function Login() {
+export function Login({ userName, authState, onAuthChange }) {
   return (
     <main>
-      <div className="content">
-        <center>
-          <h1>Login to play guess a number!</h1>
-          <br /><br />
-          <h3>Login</h3>
-          <h5>login will be replaced with db and actual login</h5>
-          <form>
-            <label htmlFor="username">Username:</label>
-            <input type="text" id="username" name="username" /><br /><br />
-            <button type="submit" className="btn btn-secondary">Login</button>
-          </form>
-        </center>
+      <div>
+        {authState !== AuthState.Unknown && <h1>Guess a Number!</h1>}
+        {authState === AuthState.Authenticated && (
+          <Authenticated userName={userName} onLogout={() => onAuthChange(userName, AuthState.Unauthenticated)} />
+        )}
+        {authState === AuthState.Unauthenticated && (
+          <Unauthenticated
+            userName={userName}
+            onLogin={(loginUserName) => {
+              onAuthChange(loginUserName, AuthState.Authenticated);
+            }}
+          />
+        )}
       </div>
-
-      {/* <div className="text-center mt-4">
-        <img src="design.png" alt="Design Image" className="responsive-image" />
-      </div> */}
-
-
-      <footer className="bg-dark text-white-50">
-          <div className="container-fluid">
-            <span className="text-reset">Author: Brennan Duncan, </span>
-            <a className="text-reset" href="https://github.com/Shadowarrior7/CS260">
-              Source
-            </a>
-          </div>
-        </footer>
     </main>
   );
 }
