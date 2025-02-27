@@ -15,6 +15,7 @@ export function Login({ userName, authState, onAuthChange }) {
           <Unauthenticated
             userName={userName}
             onLogin={(loginUserName) => {
+              localStorage.setItem('userName', loginUserName);
               onAuthChange(loginUserName, AuthState.Authenticated);
             }}
           />

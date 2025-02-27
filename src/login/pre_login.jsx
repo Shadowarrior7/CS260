@@ -21,7 +21,9 @@ export function PreLogin(props) {
   return (
     <>
       <div>
+        <center>
         <h1>Login to Guess a Number</h1>
+        </center>
       </div>
       <div className='login-form'>
         <div className='input-group mb-3'>

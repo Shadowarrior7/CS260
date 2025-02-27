@@ -19,7 +19,7 @@ export function LoggedIn(props) {
           <div className='instructions'>
             <h5>This is the website that you can guess a daily number! 
               Submit a guess and the site will tell you if your guess is too high or low. 
-              If you guess correctly youll get a surprise! If yo wish to hone your num,ber guessing skills, 
+              If you guess correctly you'll get a surprise! If you wish to hone your number guessing skills, 
               the practice page will hep you out!</h5>
           </div>
           <NavLink to="/home" className="btn btn-primary">Lets Get Started!</NavLink>

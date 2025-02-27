@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
@@ -8,9 +8,9 @@ import { Home } from './home/home';
 import { AuthState } from './login/authState';
 
 export default function App() {
-  const [userName, setUserName] = React.useState(localStorage.getItem('userName') || '');
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
   const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
-  const [authState, setAuthState] = React.useState(currentAuthState);
+  const [authState, setAuthState] = useState(currentAuthState);
 
   return (
     <BrowserRouter>
@@ -24,18 +24,18 @@ export default function App() {
                 </NavLink>
               </li>
               {authState === AuthState.Authenticated && (
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/practice">
-                  Practice
-                </NavLink>
-              </li>
-              )}
-              {authState === AuthState.Authenticated && (
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/home">
-                  Home
-                </NavLink>
-              </li>
+                <>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/practice">
+                      Practice
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/home">
+                      Home
+                    </NavLink>
+                  </li>
+                </>
               )}
             </ul>
           </nav>
@@ -57,7 +57,7 @@ export default function App() {
               setUserName(userName);
             }}/>} />
           <Route path="/practice" element={<Practice />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Home userName={userName} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

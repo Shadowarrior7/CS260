@@ -8,4 +8,26 @@
     align-items: center;
     padding-bottom: 60px;
 }
-
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .feedback {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+  
+  .submit {
+    margin-top: 20px;
+  }
+  
+  .new-number {
+    margin-top: 20px;
+  }
+  
+  .guess-counter {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }

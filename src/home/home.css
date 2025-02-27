@@ -21,7 +21,7 @@ main {
 }
 
 .sidebar {
-    width: 300px;
+    width: 400px;
     background-color: rgb(146, 145, 145);
     border-radius: 20px;
     padding: 30px;
@@ -39,6 +39,12 @@ footer {
 .submit {
     padding-top: 10px;
 }
+
+.guess-counter {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
 
 @media (max-width: 600px) {
     .container {
