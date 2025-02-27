@@ -18,8 +18,8 @@ export function Home() {
             <span id="light-high">High</span>
             <span id="light-low">Low</span>
           </div>
-          <div className="logout">
-          <NavLink to="/login" className="btn btn-danger">Logout</NavLink>
+          <div className="submit">
+          <NavLink to="/home" className="btn btn-danger">submit</NavLink>
           </div>
         </div>
         <div className="sidebar">

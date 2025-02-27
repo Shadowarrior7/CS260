@@ -26,3 +26,12 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+.instructions{
+    max-width: 80%;
+}

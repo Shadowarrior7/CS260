@@ -21,6 +21,9 @@ export function PreLogin(props) {
   return (
     <>
       <div>
+        <h1>Login to Guess a Number</h1>
+      </div>
+      <div className='login-form'>
         <div className='input-group mb-3'>
           <input className='form-control' type='text' value={userName} onChange={(e) => setUserName(e.target.value)} placeholder='your@email.com' />
         </div>

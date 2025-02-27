@@ -2,7 +2,13 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './logged_in.css';
 
-export function LoggedIn() {
+export function LoggedIn(props) {
+
+  function logout() {
+    localStorage.removeItem('userName');
+    props.onLogout();
+  }
+
   return (
     <main>
       <div className="content">
@@ -10,13 +16,21 @@ export function LoggedIn() {
           <h1>Welcome to Guess a number!</h1>
           <br /><br />
           <h3>Instructions</h3>
-          <h5>fill with instructions later</h5>
-          <NavLink to="/home" className="btn btn-danger">Lets Get Started!</NavLink>
+          <div className='instructions'>
+            <h5>This is the website that you can guess a daily number! 
+              Submit a guess and the site will tell you if your guess is too high or low. 
+              If you guess correctly youll get a surprise! If yo wish to hone your num,ber guessing skills, 
+              the practice page will hep you out!</h5>
+          </div>
+          <NavLink to="/home" className="btn btn-primary">Lets Get Started!</NavLink>
+          <NavLink to="/login" className="btn btn-danger" onClick={() => logout()}>
+            Logout
+          </NavLink>
         </center>
       </div>
 
 
-      <footer className="bg-dark text-white-50">
+      <footer className="text-white-50">
           <div className="container-fluid">
             <span className="text-reset">Author: Brennan Duncan, </span>
             <a className="text-reset" href="https://github.com/Shadowarrior7/CS260">
