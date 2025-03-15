@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import './home.css';
-import { getScores, addScore, hasGuessedToday, resetScores } from './scoreboard';
+import { getScores, hasGuessedToday, resetScores } from './scoreboard';
 import confetti from 'canvas-confetti';
 
 export function Home(props) {
@@ -9,24 +9,114 @@ export function Home(props) {
   const [guess, setGuess] = useState('');
   const [feedback, setFeedback] = useState('');
   const [guesses, setGuesses] = useState(0);
-  const [scores, setScores] = useState(getScores());
-  const [hasGuessed, setHasGuessed] = useState(hasGuessedToday(props.userName));
+  const [scores, setScores] = useState([]);
+  const [hasGuessed, setHasGuessed] = useState(false);
   const [already, setAlready] = useState('');
+  const [localDateTime, setLocalDateTime] = useState({ date: '', time: '' });
+  const [worldDateTime, setWorldDateTime] = useState({ date: '', time: '', dateTime: '' });
 
+  useEffect(() => {
+    async function fetchScores() {
+      const scores = await getScores();
+      setScores(scores);
+      setHasGuessed(await hasGuessedToday(props.userName));
+    }
+    fetchScores();
+  }, [props.userName]);
+
+  useEffect(() => {
+    function fetchLocalDateTime() {
+      const now = new Date();
+      setLocalDateTime({
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString()
+      });
+    }
+    fetchLocalDateTime();
+    const intervalId = setInterval(fetchLocalDateTime, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    async function fetchWorldDateTime() {
+      try {
+        const dateTime = await getDateTime();
+        console.log('Fetched world dateTime:', dateTime); // Debugging log
+        setWorldDateTime(dateTime);
+      } catch (error) {
+        console.error('Error fetching world dateTime:', error);
+        // Fallback to local date and time
+        const now = new Date();
+        setWorldDateTime({
+          date: now.toLocaleDateString(),
+          time: now.toLocaleTimeString(),
+          dateTime: now.toISOString()
+        });
+        console.error('Using local date and time due to error.');
+      }
+    }
+    fetchWorldDateTime();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const dateTime = await getDateTime();
+        console.log('Updated world dateTime:', dateTime); // Debugging log
+        setWorldDateTime(dateTime);
+      } catch (error) {
+        console.error('Error updating world dateTime:', error);
+        // Fallback to local date and time
+        const now = new Date();
+        setWorldDateTime({
+          date: now.toLocaleDateString(),
+          time: now.toLocaleTimeString(),
+          dateTime: now.toISOString()
+        });
+        console.error('Using local date and time due to error.');
+      }
+    }, 100000); // Update every minute instead of every second
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  async function saveScore(score) {
+    const newScore = { userName: props.userName, guesses: score, date: worldDateTime.dateTime };
+  
+    await fetch('/api/score', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(newScore),
+    });
+  
+    const updatedScores = await getScores();
+    setScores(updatedScores);
+  }
 
   function generateRandomNumber() {
     return Math.floor(Math.random() * 100) + 1;
   }
 
-  setInterval(() => {
-    setScores(getScores());
-  }, 1000); // Update every second
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const updatedScores = await getScores();
+      console.log('Updated scores:', updatedScores); // Debugging log
+      setScores(updatedScores);
+    }, 1000); // Update every second
 
-  setInterval(() => {
-    setRandomNumber(generateRandomNumber());
-  }, 1000 * 60 * 60 * 24); // Update every 24 hours
+    return () => clearInterval(intervalId);
+  }, []);
 
-  function handleGuess() {
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setRandomNumber(generateRandomNumber());
+    }, 1000 * 60 * 60 * 24); // Update every 24 hours
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  async function handleGuess() {
     if (hasGuessed) {
       setAlready('You have already guessed the number today. Please wait for the new daily number. Or try the practice page!');
       return;
@@ -42,8 +132,7 @@ export function Home(props) {
       setFeedback('Too high!');
     } else {
       setFeedback('Correct! You guessed the number!');
-      addScore(props.userName, guesses + 1);
-      setScores(getScores());
+      await saveScore(guesses + 1);
       setHasGuessed(true);
       triggerConfetti();
     }
@@ -57,17 +146,24 @@ export function Home(props) {
     });
   }
 
-  function getDateTime() {
+  async function getDateTime() {
+    const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
+    if (response.status === 429) {
+      throw new Error('Rate limit exceeded');
+    }
+    const data = await response.json();
+    const now = new Date(data.datetime);
     return {
-      date: '00/00/0000',
-      time: '00:00:00'
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString(),
+      dateTime: now.toISOString() // Include the full ISO string for the score
     };
   }
-  const DateTime = getDateTime();
 
-  function handleResetScores() {
-    resetScores();
-    setScores(getScores());
+  async function handleResetScores() {
+    await resetScores();
+    const updatedScores = await getScores();
+    setScores(updatedScores);
   }
 
   return (
@@ -75,8 +171,8 @@ export function Home(props) {
       <div className="container">
         <div className="content">
           <h1>Daily Guess the Number!</h1>
-          <p>Date: <span id="date">{DateTime.date}</span></p>
-          <p>Time: <span id="time">{DateTime.time}</span></p>
+          <p>Date: <span id="date">{localDateTime.date}</span></p>
+          <p>Time: <span id="time">{localDateTime.time}</span></p>
           <br />
           <div>
             <label htmlFor="input">Input:</label>
@@ -86,7 +182,6 @@ export function Home(props) {
               name="input"
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
-              
             />
             <span className="feedback">{feedback}</span>
           </div>

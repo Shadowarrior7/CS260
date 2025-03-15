@@ -4,9 +4,22 @@ import './logged_in.css';
 
 export function LoggedIn(props) {
 
+  // function logout() {
+  //   localStorage.removeItem('userName');
+  //   props.onLogout();
+  // }
+
   function logout() {
-    localStorage.removeItem('userName');
-    props.onLogout();
+    fetch(`/api/auth/logout`, {
+      method: 'delete',
+    })
+      .catch(() => {
+        // Logout failed. Assuming offline
+      })
+      .finally(() => {
+        localStorage.removeItem('userName');
+        props.onLogout();
+      });
   }
 
   return (

@@ -8,14 +8,29 @@ export function PreLogin(props) {
   const [password, setPassword] = React.useState('');
   const [displayError, setDisplayError] = React.useState(null);
 
+  async function loginOrCreate(endpoint) {
+    const response = await fetch(endpoint, {
+      method: 'post',
+      body: JSON.stringify({ email: userName, password: password }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    if (response?.status === 200) {
+      localStorage.setItem('userName', userName);
+      props.onLogin(userName);
+    } else {
+      const body = await response.json();
+      setDisplayError(`⚠ Error: ${body.msg}`);
+    }
+  }
+
   async function loginUser() {
-    localStorage.setItem('userName', userName);
-    props.onLogin(userName);
+    await loginOrCreate('/api/auth/login');
   }
 
   async function createUser() {
-    localStorage.setItem('userName', userName);
-    props.onLogin(userName);
+    await loginOrCreate('/api/auth/create');
   }
 
   return (
@@ -32,12 +47,13 @@ export function PreLogin(props) {
         <div className='input-group mb-3'>
           <input className='form-control' type='password' onChange={(e) => setPassword(e.target.value)} placeholder='password' />
         </div>
-        <Button variant='primary' onClick={() => loginUser()} disabled={!userName || !password}>
+        <Button variant='primary' onClick={loginUser} disabled={!userName || !password}>
           Login
         </Button>
-        <Button variant='secondary' onClick={() => createUser()} disabled={!userName || !password}>
+        <Button variant='secondary' onClick={createUser} disabled={!userName || !password}>
           Create
         </Button>
+        {displayError && <div className="error">{displayError}</div>}
       </div>
 
       <footer className="text-white-50">
@@ -51,17 +67,3 @@ export function PreLogin(props) {
     </>
   );
 }
-
-{/* <div className="content">
-        <center>
-          <h1>Login to play guess a number!</h1>
-          <br /><br />
-          <h3>Login</h3>
-          <h5>login will be replaced with db and actual login</h5>
-          <form>
-            <label htmlFor="username">Username:</label>
-            <input type="text" id="username" name="username" /><br /><br />
-            <button type="submit" className="btn btn-secondary">Login</button>
-          </form>
-        </center>
-      </div> */}
