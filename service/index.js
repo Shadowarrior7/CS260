@@ -2,12 +2,10 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
+const { getUser, getUserByToken, addUser, updateUser, addScore, getHighScores } = require('./database'); // Import database functions
 const app = express();
 
 const authCookieName = 'token';
-
-let users = [];
-let scores = [];
 
 const port = process.argv.length > 2 ? process.argv[2] : 2000;
 app.use(express.json());
@@ -20,33 +18,33 @@ app.use(`/api`, apiRouter);
 
 // Middleware to verify that the user is authorized to call an endpoint
 const verifyAuth = async (req, res, next) => {
-    const user = await findUser('token', req.cookies[authCookieName]);
-    if (user) {
-      next();
-    } else {
-      res.status(401).send({ msg: 'Unauthorized' });
-    }
-  };
+  const user = await getUserByToken(req.cookies[authCookieName]);
+  if (user) {
+    next();
+  } else {
+    res.status(401).send({ msg: 'Unauthorized' });
+  }
+};
 
 // CreateAuth a new user
 apiRouter.post('/auth/create', async (req, res) => {
-    console.log('Create user endpoint hit');
-    if (await findUser('email', req.body.email)) {
-      res.status(409).send({ msg: 'Existing user' });
-    } else {
-      const user = await createUser(req.body.email, req.body.password);
-  
-      setAuthCookie(res, user.token);
-      res.send({ email: user.email });
-    }
-  });
+  console.log('Create user endpoint hit');
+  if (await getUser(req.body.email)) {
+    res.status(409).send({ msg: 'Existing user' });
+  } else {
+    const user = await createUser(req.body.email, req.body.password);
+    setAuthCookie(res, user.token);
+    res.send({ email: user.email });
+  }
+});
 
 // GetAuth login an existing user
 apiRouter.post('/auth/login', async (req, res) => {
-  const user = await findUser('email', req.body.email);
+  const user = await getUser(req.body.email);
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
+      await updateUser(user); // Update the user's token in the database
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -57,31 +55,31 @@ apiRouter.post('/auth/login', async (req, res) => {
 
 // DeleteAuth logout a user
 apiRouter.delete('/auth/logout', async (req, res) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
+  const user = await getUserByToken(req.cookies[authCookieName]);
   if (user) {
     delete user.token;
+    await updateUser(user); // Remove the token from the database
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
 
 // ResetScores
-apiRouter.post('/scores/reset', verifyAuth, (req, res) => {
-    scores = [];
-    res.status(204).end();
-  });
-
-
-
+apiRouter.post('/scores/reset', verifyAuth, async (req, res) => {
+  await resetScores(); // Clear scores in the database
+  res.status(204).end();
+});
 
 // GetScores
-apiRouter.get('/scores', verifyAuth, (_req, res) => {
+apiRouter.get('/scores', verifyAuth, async (_req, res) => {
+  const scores = await getHighScores();
   res.send(scores);
 });
 
 // SubmitScore
-apiRouter.post('/score', verifyAuth, (req, res) => {
-  scores = updateScores(req.body);
+apiRouter.post('/score', verifyAuth, async (req, res) => {
+  await addScore(req.body); // Add the score to the database
+  const scores = await getHighScores();
   res.send(scores);
 });
 
@@ -95,45 +93,18 @@ app.use((_req, res) => {
   res.sendFile('index.html', { root: 'public' });
 });
 
-// updateScores considers a new score for inclusion in the high scores.
-function updateScores(newScore) {
-  let found = false;
-  for (const [i, prevScore] of scores.entries()) {
-    if (newScore.score > prevScore.score) {
-      scores.splice(i, 0, newScore);
-      found = true;
-      break;
-    }
-  }
-
-  if (!found) {
-    scores.push(newScore);
-  }
-
-  if (scores.length > 10) {
-    scores.length = 10;
-  }
-
-  return scores;
-}
-
+// Helper function to create a new user
 async function createUser(email, password) {
-    const passwordHash = await bcrypt.hash(password, 10);
-  
-    const user = {
-      email: email,
-      password: passwordHash,
-      token: uuid.v4(),
-    };
-    users.push(user);
-  
-    return user;
-  }
+  const passwordHash = await bcrypt.hash(password, 10);
 
-async function findUser(field, value) {
-  if (!value) return null;
+  const user = {
+    email: email,
+    password: passwordHash,
+    token: uuid.v4(),
+  };
+  await addUser(user); // Add the user to the database
 
-  return users.find((u) => u[field] === value);
+  return user;
 }
 
 // setAuthCookie in the HTTP response

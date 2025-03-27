@@ -147,18 +147,40 @@ export function Home(props) {
   }
 
   async function getDateTime() {
-    const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
-    if (response.status === 429) {
-      throw new Error('Rate limit exceeded');
+    try {
+      const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Raw Response from API:', data); // Debugging log
+  
+      try {
+        return {
+          date: new Date(data.datetime).toLocaleDateString(),
+          time: new Date(data.datetime).toLocaleTimeString(),
+          dateTime: new Date(data.datetime).toISOString(),
+        };
+      } catch (jsonError) {
+        console.error('Invalid JSON response:', text);
+        throw new Error('Failed to parse JSON response');
+      }
+    } catch (error) {
+      console.error('Error fetching dateTime:', error);
+      // Fallback to local date and time
+      const now = new Date();
+      return {
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+        dateTime: now.toISOString(),
+      };
     }
-    const data = await response.json();
-    const now = new Date(data.datetime);
-    return {
-      date: now.toLocaleDateString(),
-      time: now.toLocaleTimeString(),
-      dateTime: now.toISOString() // Include the full ISO string for the score
-    };
   }
+  
+  
+  
 
   async function handleResetScores() {
     await resetScores();
