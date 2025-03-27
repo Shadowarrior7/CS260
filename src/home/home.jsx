@@ -82,15 +82,24 @@ export function Home(props) {
   }, []);
 
   async function saveScore(score) {
-    const newScore = { userName: props.userName, guesses: score, date: worldDateTime.dateTime };
+    console.log('Current worldDateTime:', worldDateTime); // Debugging log
   
-    await fetch('/api/score', {
+    const newScore = { userName: props.userName, guesses: score, date: worldDateTime.dateTime };
+    console.log('Sending score data:', newScore); // Debugging log
+  
+    const response = await fetch('/api/score', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newScore),
     });
   
+    if (!response.ok) {
+      console.error('Failed to save score:', response.statusText); // Debugging log
+      return;
+    }
+  
     const updatedScores = await getScores();
+    console.log('Scores after saving:', updatedScores); // Debugging log
     setScores(updatedScores);
   }
 

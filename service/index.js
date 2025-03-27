@@ -2,7 +2,7 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
-const { getUser, getUserByToken, addUser, updateUser, addScore, getHighScores } = require('./database'); // Import database functions
+const { getUser, getUserByToken, addUser, updateUser, addScore, getHighScores } = require('./database');
 const app = express();
 
 const authCookieName = 'token';
@@ -44,7 +44,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
-      await updateUser(user); // Update the user's token in the database
+      await updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -58,7 +58,7 @@ apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await getUserByToken(req.cookies[authCookieName]);
   if (user) {
     delete user.token;
-    await updateUser(user); // Remove the token from the database
+    await updateUser(user);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
@@ -66,34 +66,45 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 
 // ResetScores
 apiRouter.post('/scores/reset', verifyAuth, async (req, res) => {
-  await resetScores(); // Clear scores in the database
+  await resetScores();
   res.status(204).end();
 });
 
-// GetScores
 apiRouter.get('/scores', verifyAuth, async (_req, res) => {
   const scores = await getHighScores();
+  //console.log('Scores sent to frontend:', scores); 
   res.send(scores);
 });
 
 // SubmitScore
 apiRouter.post('/score', verifyAuth, async (req, res) => {
-  await addScore(req.body); // Add the score to the database
-  const scores = await getHighScores();
-  res.send(scores);
+  //console.log('Received score data:', req.body);
+  const { userName, guesses, date } = req.body;
+  if (!userName || !guesses || !date) {
+    console.error('Invalid score data:', req.body);
+    return res.status(400).send({ msg: 'Invalid score data' });
+  }
+  try {
+    await addScore(req.body); 
+    const scores = await getHighScores();
+    //console.log('Updated scores:', scores);
+    res.send(scores);
+  } catch (error) {
+    console.error('Error saving score:', error);
+    res.status(500).send({ msg: 'Failed to save score' });
+  }
 });
 
-// Default error handler
 app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
 });
 
-// Return the application's default page if the path is unknown
+
 app.use((_req, res) => {
   res.sendFile('index.html', { root: 'public' });
 });
 
-// Helper function to create a new user
+
 async function createUser(email, password) {
   const passwordHash = await bcrypt.hash(password, 10);
 
@@ -102,12 +113,12 @@ async function createUser(email, password) {
     password: passwordHash,
     token: uuid.v4(),
   };
-  await addUser(user); // Add the user to the database
+  await addUser(user); 
 
   return user;
 }
 
-// setAuthCookie in the HTTP response
+
 function setAuthCookie(res, authToken) {
   res.cookie(authCookieName, authToken, {
     secure: true,

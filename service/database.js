@@ -35,18 +35,21 @@ async function updateUser(user) {
 }
 
 async function addScore(score) {
-  return scoreCollection.insertOne(score);
-}
+    console.log('Saving score to database:', score); // Debugging log
+    return scoreCollection.insertOne(score);
+  }
 
-function getHighScores() {
-  const query = { score: { $gt: 0 } };
-  const options = {
-    sort: { score: -1 },
-    limit: 10,
-  };
-  const cursor = scoreCollection.find(query, options);
-  return cursor.toArray();
-}
+  function getHighScores() {
+    const query = {}; // Match all scores
+    const options = {
+      sort: { guesses: 1 }, // Sort by guesses in ascending order
+      limit: 10, // Limit to top 10 scores
+    };
+  
+    //console.log('Fetching high scores from database...'); // Debugging log
+    const cursor = scoreCollection.find(query, options);
+    return cursor.toArray();
+  }
 
 // Reset all scores
 async function resetScores() {
