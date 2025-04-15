@@ -2,7 +2,8 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
-const { getUser, getUserByToken, addUser, updateUser, addScore, getHighScores } = require('./database.js');
+const { getUser, getUserByToken, addUser, updateUser, addScore, getHighScores, resetScores } = require('./database.js');
+const { peerProxy } = require('./peerProxy.js');
 const app = express();
 
 const authCookieName = 'token';
@@ -67,6 +68,10 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 // ResetScores
 apiRouter.post('/scores/reset', verifyAuth, async (req, res) => {
   await resetScores();
+
+  const notification = {type: 'resetScores'};
+  wsServer.broadcast(JSON.stringify(notification));
+
   res.status(204).end();
 });
 
@@ -88,6 +93,9 @@ apiRouter.post('/score', verifyAuth, async (req, res) => {
     await addScore(req.body); 
     const scores = await getHighScores();
     //console.log('Updated scores:', scores);
+    const notification = {type: 'scoreUpdate', data: scores};
+    wsServer.broadcast(JSON.stringify(notification));
+
     res.send(scores);
   } catch (error) {
     console.error('Error saving score:', error);
@@ -127,6 +135,8 @@ function setAuthCookie(res, authToken) {
   });
 }
 
-app.listen(port, () => {
+const httpService = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+const wsServer = peerProxy(httpService)

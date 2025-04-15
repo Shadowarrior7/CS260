@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import './home.css';
 import { getScores, hasGuessedToday, resetScores } from './scoreboard';
 import confetti from 'canvas-confetti';
+import { GameNotification } from './gameNotification';
 
 export function Home(props) {
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
@@ -14,6 +15,43 @@ export function Home(props) {
   const [already, setAlready] = useState('');
   const [localDateTime, setLocalDateTime] = useState({ date: '', time: '' });
   const [worldDateTime, setWorldDateTime] = useState({ date: '', time: '', dateTime: '' });
+  const [socket, setSocket] = useState(null);
+
+
+  //ws stuff
+  useEffect(() => {
+    // Establish WebSocket connection
+    const ws = new WebSocket(`ws://${window.location.hostname}:4000`);
+    setSocket(ws);
+
+    ws.onmessage = (event) => {
+      const notification = JSON.parse(event.data);
+      console.log('Received WebSocket notification:', notification);
+
+      if (notification.type === 'scoreUpdate') {
+        console.log('Updating scores from WebSocket:', notification.data);
+        setScores(notification.data);
+      } else if (notification.type === 'resetScores') {
+        setScores([]);
+      } else {
+        console.warn('Unknown notification type:', notification.type);
+      }
+    };
+
+    ws.onclose = () => {
+      console.error('WebSocket connection closed');
+      
+    };
+
+
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
+
+
 
   useEffect(() => {
     async function fetchScores() {
@@ -107,15 +145,15 @@ export function Home(props) {
     return Math.floor(Math.random() * 100) + 1;
   }
 
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const updatedScores = await getScores();
-      console.log('Updated scores:', updatedScores); // Debugging log
-      setScores(updatedScores);
-    }, 1000); // Update every second
+  // useEffect(() => {
+  //   const intervalId = setInterval(async () => {
+  //     const updatedScores = await getScores();
+  //     console.log('Updated scores:', updatedScores); // Debugging log
+  //     setScores(updatedScores);
+  //   }, 1000); // Update every second
 
-    return () => clearInterval(intervalId);
-  }, []);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -193,8 +231,8 @@ export function Home(props) {
 
   async function handleResetScores() {
     await resetScores();
-    const updatedScores = await getScores();
-    setScores(updatedScores);
+    // const updatedScores = await getScores();
+    // setScores(updatedScores);
   }
 
   return (
@@ -227,9 +265,9 @@ export function Home(props) {
             <p>Number of guesses: {guesses}</p>
           </div>
 
-          <div className="reset">
+          {/* <div className="reset">
             <button onClick={handleResetScores} className="btn btn-warning">Reset Scores</button>
-          </div>
+          </div> */}
         </div>
         <div className="sidebar">
           <h2>Top Scores</h2>
